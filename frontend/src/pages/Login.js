@@ -68,8 +68,8 @@ const Login = () => {
           <p>Default credentials for testing:</p>
           <ul>
             <li>Admin: admin@example.com / password123</li>
-            <li>Manager: manager@example.com / password123</li>
-            <li>User: user@example.com / password123</li>
+            {/*<li>Manager: manager@example.com / password123</li>*/}
+            {/*<li>User: user@example.com / password123</li>*/}
           </ul>
         </div>
       </div>
