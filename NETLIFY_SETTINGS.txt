@@ -1,0 +1,40 @@
+🔧 NETLIFY BUILD SETTINGS
+
+Fill these in the Netlify build settings page:
+
+═══════════════════════════════════════════════
+Branch to deploy:
+main
+
+Base directory:
+frontend
+
+Build command:
+npm run build
+
+Publish directory:
+frontend/build
+
+Functions directory:
+(Leave empty)
+
+═══════════════════════════════════════════════
+ENVIRONMENT VARIABLES (Add after initial deploy):
+
+Click "Add environment variables" button and add:
+
+Variable name:  REACT_APP_API_URL
+Variable value: https://task-management-backend-1-tau.vercel.app
+
+Then REDEPLOY the site!
+
+═══════════════════════════════════════════════
+📝 NOTES:
+
+- Base directory is "frontend" because your React app is in a subdirectory
+- Publish directory is "frontend/build" where npm run build creates the files
+- After adding environment variable, you must redeploy
+- Make sure your GitHub repo has the latest code pushed
+
+═══════════════════════════════════════════════
+

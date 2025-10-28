@@ -32,10 +32,6 @@ const Dashboard = () => {
     managerId: ''
   });
 
-  useEffect(() => {
-    loadDashboardData();
-  }, [filters]);
-
   const loadDashboardData = async () => {
     setLoading(true);
     try {
@@ -65,6 +61,11 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadDashboardData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters]);
 
   const handleCreateTask = async (e) => {
     e.preventDefault();
