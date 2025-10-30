@@ -110,3 +110,89 @@
   padding: 5px 0;
   font-family: monospace;
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .login-container {
+    padding: 15px;
+  }
+
+  .login-card {
+    padding: 30px 25px;
+  }
+
+  .login-card h1 {
+    font-size: 24px;
+  }
+
+  .login-card h2 {
+    font-size: 18px;
+    margin-bottom: 25px;
+  }
+
+  .form-group {
+    margin-bottom: 18px;
+  }
+
+  .form-group input {
+    padding: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-container {
+    padding: 10px;
+  }
+
+  .login-card {
+    padding: 25px 20px;
+    border-radius: 8px;
+  }
+
+  .login-card h1 {
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+
+  .login-card h2 {
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+  .form-group label {
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+
+  .form-group input {
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  .btn-primary {
+    padding: 11px;
+    font-size: 15px;
+  }
+
+  .error-message {
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  .login-help {
+    margin-top: 20px;
+    padding-top: 15px;
+  }
+
+  .login-help p {
+    font-size: 12px;
+  }
+
+  .login-help li {
+    font-size: 11px;
+  }
+}

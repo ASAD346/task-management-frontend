@@ -65,3 +65,4 @@ Since `localhost` doesn't exist on Netlify, all API calls fail!
 
 **After setting the environment variable, everything will work!** 🎉
 
+

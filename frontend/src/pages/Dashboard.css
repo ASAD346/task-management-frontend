@@ -264,17 +264,52 @@
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+  .dashboard-container {
+    padding: 1.5rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .tasks-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
 @media (max-width: 768px) {
   .dashboard-container {
     padding: 1rem;
   }
 
+  .dashboard-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .subtitle {
+    font-size: 0.875rem;
+  }
+
   .stats-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .stat-card {
+    padding: 1rem;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
   }
 
   .section {
-    padding: 1.5rem;
+    padding: 1.25rem;
   }
 
   .section-header {
@@ -283,12 +318,30 @@
     gap: 1rem;
   }
 
+  .section-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .button-group {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .button-group button {
+    width: 100%;
+  }
+
+  .form-card {
+    padding: 1.25rem;
+  }
+
   .form-row {
     grid-template-columns: 1fr;
   }
 
   .tasks-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .filters {
@@ -297,5 +350,74 @@
 
   .filter-select {
     min-width: 100%;
+  }
+
+  .user-card {
+    padding: 0.75rem 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .btn-delete-small {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-container {
+    padding: 0.75rem;
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .stat-card {
+    padding: 0.875rem;
+  }
+
+  .stat-value {
+    font-size: 1.75rem;
+  }
+
+  .section {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .section-header h2 {
+    font-size: 1.125rem;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.813rem;
+  }
+
+  .form-card {
+    padding: 1rem;
+  }
+
+  .form-card h3 {
+    font-size: 1rem;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .form-actions button {
+    width: 100%;
+  }
+
+  .user-list h3 {
+    font-size: 1rem;
   }
 }

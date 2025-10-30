@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import TaskCard from '../components/TaskCard';
@@ -11,12 +11,14 @@ const Dashboard = () => {
   const [tasks, setTasks] = useState([]);
   const [stats, setStats] = useState({ pending: 0, 'in-progress': 0, completed: 0 });
   const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [showUserForm, setShowUserForm] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [filters, setFilters] = useState({ status: '', search: '' });
   const [users, setUsers] = useState([]);
   const [managers, setManagers] = useState([]);
+  const [notification, setNotification] = useState({ show: false, message: '', type: '' });
 
   const [taskForm, setTaskForm] = useState({
     title: '',
@@ -32,7 +34,15 @@ const Dashboard = () => {
     managerId: ''
   });
 
-  const loadDashboardData = async () => {
+  // Show notification helper
+  const showNotification = useCallback((message, type = 'success') => {
+    setNotification({ show: true, message, type });
+    setTimeout(() => {
+      setNotification({ show: false, message: '', type: '' });
+    }, 3000);
+  }, []);
+
+  const loadDashboardData = useCallback(async () => {
     setLoading(true);
     try {
       const [tasksRes, statsRes] = await Promise.all([
@@ -57,10 +67,11 @@ const Dashboard = () => {
       }
     } catch (error) {
       console.error('Error loading dashboard:', error);
+      showNotification('Error loading dashboard data', 'error');
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters, user.role, showNotification]);
 
   useEffect(() => {
     loadDashboardData();
@@ -69,18 +80,31 @@ const Dashboard = () => {
 
   const handleCreateTask = async (e) => {
     e.preventDefault();
+    setActionLoading(true);
     try {
       if (editingTask) {
-        await taskService.updateTask(editingTask._id, taskForm);
+        const response = await taskService.updateTask(editingTask._id, taskForm);
+        // Optimistically update the task in state
+        setTasks(prevTasks => prevTasks.map(task => 
+          task._id === editingTask._id ? response.data : task
+        ));
+        showNotification('Task updated successfully!', 'success');
       } else {
-        await taskService.createTask(taskForm);
+        const response = await taskService.createTask(taskForm);
+        // Optimistically add the new task to state
+        setTasks(prevTasks => [response.data, ...prevTasks]);
+        showNotification('Task created successfully!', 'success');
       }
       setTaskForm({ title: '', description: '', dueDate: '', status: 'pending' });
       setShowTaskForm(false);
       setEditingTask(null);
-      loadDashboardData();
+      // Reload to get updated stats
+      const statsRes = await taskService.getTaskStats();
+      setStats(statsRes.data || { pending: 0, 'in-progress': 0, completed: 0 });
     } catch (error) {
-      alert(error.response?.data?.message || 'Error saving task');
+      showNotification(error.response?.data?.message || 'Error saving task', 'error');
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -97,21 +121,41 @@ const Dashboard = () => {
 
   const handleDeleteTask = async (id) => {
     if (window.confirm('Are you sure you want to delete this task?')) {
+      setActionLoading(true);
+      // Optimistically remove from UI
+      const previousTasks = tasks;
+      setTasks((prev) => prev.filter((t) => t._id !== id));
       try {
         await taskService.deleteTask(id);
-        loadDashboardData();
+        // Refresh stats only
+        const statsRes = await taskService.getTaskStats();
+        setStats(statsRes.data || { pending: 0, 'in-progress': 0, completed: 0 });
+        showNotification('Task deleted successfully!', 'success');
       } catch (error) {
-        alert(error.response?.data?.message || 'Error deleting task');
+        // Revert on error
+        setTasks(previousTasks);
+        showNotification(error.response?.data?.message || 'Error deleting task', 'error');
+      } finally {
+        setActionLoading(false);
       }
     }
   };
 
   const handleStatusChange = async (id, status) => {
+    setActionLoading(true);
+    const previousTasks = tasks;
+    // Optimistically update
+    setTasks((prev) => prev.map((t) => (t._id === id ? { ...t, status } : t)));
     try {
       await taskService.updateTask(id, { status });
-      loadDashboardData();
+      const statsRes = await taskService.getTaskStats();
+      setStats(statsRes.data || { pending: 0, 'in-progress': 0, completed: 0 });
+      showNotification('Status updated', 'success');
     } catch (error) {
-      alert(error.response?.data?.message || 'Error updating status');
+      setTasks(previousTasks);
+      showNotification(error.response?.data?.message || 'Error updating status', 'error');
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -344,7 +388,7 @@ const Dashboard = () => {
           {showTaskForm && (
             <div className="form-card">
               <h3>{editingTask ? 'Edit Task' : 'Create New Task'}</h3>
-              <form onSubmit={handleCreateTask}>
+                <form onSubmit={handleCreateTask}>
                 <input
                   type="text"
                   placeholder="Task Title"
@@ -376,8 +420,8 @@ const Dashboard = () => {
                   </select>
                 </div>
                 <div className="form-actions">
-                  <button type="submit" className="btn-primary">
-                    {editingTask ? 'Update Task' : 'Create Task'}
+                  <button type="submit" className="btn-primary" disabled={actionLoading}>
+                    {actionLoading ? (editingTask ? 'Updating...' : 'Creating...') : (editingTask ? 'Update Task' : 'Create Task')}
                   </button>
                   <button
                     type="button"
@@ -412,6 +456,15 @@ const Dashboard = () => {
             )}
           </div>
         </div>
+        {/* Notification */}
+        {notification.show && (
+          <div className="form-card" style={{
+            background: notification.type === 'error' ? '#fef2f2' : '#f0fdf4',
+            borderColor: notification.type === 'error' ? '#fecaca' : '#bbf7d0'
+          }}>
+            {notification.message}
+          </div>
+        )}
       </div>
     </div>
   );
